@@ -1,0 +1,11 @@
+_ignore
+
+# Python virtual environment (per-project, never committed)
+.venv/
+
+# Python bytecode cache
+__pycache__/
+*.pyc
+
+# Jupyter checkpoint files
+.ipynb_checkpoints/
