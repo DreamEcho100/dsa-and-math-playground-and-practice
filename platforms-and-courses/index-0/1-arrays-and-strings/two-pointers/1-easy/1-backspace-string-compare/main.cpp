@@ -121,6 +121,8 @@ public:
   }
 };
 
+// First run the suite with Solution1. Then change Solution1 to Solution2
+// and run the same suite again.
 typedef Solution2 Solution;
 
 // ---------------------------------------------------------------- test harness
@@ -130,64 +132,86 @@ static int testsFailed = 0;
 
 Solution solution;
 
+std::string preview(const std::string &text) {
+  const std::size_t maxLength = 20;
+  if (text.size() <= maxLength) {
+    return text;
+  }
+
+  return text.substr(0, maxLength) + "...(len=" + std::to_string(text.size()) +
+         ")";
+}
+
 void check(const std::string &s, const std::string &t, bool expected) {
   ++testsRun;
+
   const bool actual = solution.backspaceCompare(s, t);
-  const bool ok = (actual == expected);
+  const bool ok = actual == expected;
   if (!ok) {
     ++testsFailed;
   }
 
-  std::cout << (ok ? "  PASS  " : "  FAIL  ") << "backspaceCompare(\"" << s
-            << "\", \"" << t << "\")"
+  std::cout << (ok ? "  PASS  " : "  FAIL  ") << "backspaceCompare(\""
+            << preview(s) << "\", \"" << preview(t) << "\")"
             << "  expected=" << std::boolalpha << expected
-            << "  actual=" << std::boolalpha << actual << '\n';
+            << "  actual=" << actual << '\n';
 }
 
 int main() {
   std::cout << "--- backspaceCompare ---\n";
 
-  // examples from the problem statement
-  check("ab#c", "ad#c", true); // both -> "ac"
-  check("ab##", "c#d#", true); // both -> ""
-  check("a#c", "b", false);    // "c" vs "b"
+  // Problem examples
+  check("ab#c", "ad#c", true); // both become "ac"
+  check("ab##", "c#d#", true); // both become ""
+  check("a#c", "b", false);    // "c" versus "b"
 
-  // // empty inputs
+  // Empty inputs
   check("", "", true);
   check("", "#", true);
   check("", "###", true);
   check("", "a", false);
-  // return 0;
+  check("a", "", false);
 
-  // backspaces with nothing to delete
+  // Backspaces with nothing left to delete
   check("###a", "a", true);
   check("#a", "a", true);
   check("a#", "", true);
   check("a#", "b#", true);
   check("ab#", "a", true);
+  check("####", "", true);
 
-  // deletions interleaved
-  check("a##c", "#a#c", true); // both -> "c"
+  // Deletions mixed with surviving characters
+  check("a##c", "#a#c", true);
   check("abc###", "def###", true);
-  check("ab#c#d", "ad", true); // "ad" vs "ad"?  trace it by hand first
+  check("ab#c#d", "ad", true);
   check("xywrrmp", "xywrrmu#p", true);
   check("bxj##tw", "bxo#j##tw", true);
   check("bxj##tw", "bxj###tw", false);
 
-  // prefix traps: one std::string is a prefix of the other after
-  //   processing
+  // One processed result may be a prefix of the other
   check("abc", "ab", false);
   check("b", "a", false);
   check("a", "ab#", true);
   check("nzp#o#g", "b#nzp#o#g", true);
 
-  //   // longer / stress
+  // More cases that distinguish deleted from surviving characters
+  check("ab#c", "ac", true);
+  check("a###b", "b", true);
+  check("##a#", "", true);
+  check("abc##d", "ad", true);
+  check("abc##d", "bd", false);
+
+  // Stress tests; preview() keeps the output short
   check(std::string(200, 'a'), std::string(200, 'a'), true);
   check(std::string(200, '#'), "", true);
   check(std::string(100, 'a') + std::string(100, '#'), "", true);
+  check(std::string(200, 'a'), std::string(199, 'a'), false);
+  check(std::string(200, '#'), std::string(200, '#'), true);
+  check(std::string(100, 'a') + std::string(100, '#'), std::string(200, '#'),
+        true);
 
-  std::cout << "\n" << (testsRun - testsFailed) << "/" << testsRun << " passed";
-  if (testsFailed > 0) {
+  std::cout << '\n' << (testsRun - testsFailed) << '/' << testsRun << " passed";
+  if (testsFailed != 0) {
     std::cout << "  (" << testsFailed << " FAILED)";
   }
   std::cout << '\n';

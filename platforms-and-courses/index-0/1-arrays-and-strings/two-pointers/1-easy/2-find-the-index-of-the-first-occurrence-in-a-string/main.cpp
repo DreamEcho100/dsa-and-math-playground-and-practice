@@ -26,6 +26,8 @@ haystack and needle consist of lowercase English characters only
 
 #include <iostream>
 #include <string>
+#include <type_traits>
+#include <vector>
 
 /**
  * @brief Solution1: brute force, O(n * m) with worst case scenario of O(n^2)
@@ -74,6 +76,30 @@ public:
   }
 };
 
+/**
+ * @brief Solution2: KMP, O(n + m) time, O(m) extra space.
+ * Your turn (README section 6): fill in the three TODOs.
+ *
+ * WARNING: while the TODOs are empty, nothing moves `i`, so the loop never
+ * ends. Don't switch the typedef to Solution2 until you've filled them in.
+ */
+class Solution2 {
+
+public:
+  // README section 7: lps[k] = length of the longest proper prefix of
+  // needle[0..k] that is also a suffix of needle[0..k]
+  static std::vector<int> buildLps(const std::string &needle) {}
+
+  int strStr(const std::string &haystack, const std::string &needle) {
+
+    return -1;
+  }
+};
+
+// ---------------------------------------------------------------- test harness
+
+// step 1: test Solution1 first, to make sure the tests themselves are right
+// step 2: once Solution2 is filled in, change this line to Solution2
 typedef Solution1 Solution;
 
 // ---------------------------------------------------------------- test harness
@@ -92,6 +118,37 @@ std::string preview(const std::string &str) {
   return str.substr(0, maxLen) + "...(len=" + std::to_string(str.size()) + ")";
 }
 
+std::string toString(const std::vector<int> &values) {
+  std::string out = "[";
+  for (size_t k = 0; k < values.size(); k++) {
+    if (k > 0) {
+      out += ",";
+    }
+    out += std::to_string(values[k]);
+  }
+  return out + "]";
+}
+
+// checks buildLps on its own, so a wrong table is reported directly
+void checkLps(Solution2 solution, const std::string &needle,
+              const std::vector<int> &expected) {
+  ++testsRun;
+  const std::vector<int> actual = solution.buildLps(needle);
+  const bool ok = (actual == expected);
+  if (!ok) {
+    ++testsFailed;
+  }
+
+  std::cout << (ok ? "  PASS  " : "  FAIL  ") << "buildLps(\"" << needle
+            << "\")  expected=" << toString(expected)
+            << "  actual=" << toString(actual) << '\n';
+}
+// Just to avoid lint errors
+void checkLps(Solution1 solution, const std::string &needle,
+              const std::vector<int> &expected) {
+  return;
+}
+
 void check(const std::string &haystack, const std::string &needle,
            int expected) {
   ++testsRun;
@@ -107,7 +164,19 @@ void check(const std::string &haystack, const std::string &needle,
 }
 
 int main() {
-  std::cout << "--- strStr ---\n";
+  std::cout << "--- buildLps ---\n";
+
+  // check if `solution` is an instance of Solution2
+  if constexpr (std::is_same<Solution, Solution2>::value) {
+    checkLps(solution, "sad", {0, 0, 0}); // no repeats: every entry is 0
+    checkLps(solution, "ababc", {0, 0, 1, 2, 0}); // README section 5
+    checkLps(solution, "aabaa", {0, 1, 0, 1, 2}); // README section 5 practice
+    checkLps(solution, "aaaa", {0, 1, 2, 3});     // every prefix overlaps
+    checkLps(solution, "abacabab",
+             {0, 0, 1, 0, 1, 2, 3, 2}); // needs a fallback inside
+  }
+
+  std::cout << "\n--- strStr ---\n";
 
   // examples from the problem statement
   check("sadbutsad", "sad", 0);
@@ -150,6 +219,15 @@ int main() {
   // not enough room left after a first-char match
   check("abcda", "ab", 0);
   check("xyzab", "abc", -1);
+
+  // KMP fallback: needles with repeated parts (README section 10)
+  check("sabvsad", "sad", 4);      // trace 2
+  check("abababc", "ababc", 2);    // trace 1: one fallback
+  check("aabaxaabaa", "aabaa", 5); // fallback chain: j goes 4 -> 1 -> 0
+  check("ababababca", "ababca", 4);
+  check("aaaaab", "aaab", 2);
+  check("abababab", "abab", 0);
+  check("mississippi", "issipi", -1); // near miss
 
   // longer / stress (constraints: up to 10^4)
   check(std::string(10000, 'a'), std::string(10000, 'a'), 0);

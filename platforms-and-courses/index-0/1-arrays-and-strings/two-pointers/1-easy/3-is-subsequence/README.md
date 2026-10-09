@@ -40,6 +40,13 @@ What does that suggest about how many pointers you need, and how they should mov
 
 </details>
 
+## Files in this folder
+
+| file       | what it is                                                                           |
+| ---------- | ------------------------------------------------------------------------------------ |
+| `main.cpp` | `Solution1` (original), `Solution2` (fix), `Solution3` (follow-up, your turn), tests |
+| this file  | the walkthrough                                                                      |
+
 ---
 
 ## 1. What "subsequence" means, in a picture
@@ -125,7 +132,7 @@ We can't go back for it. Order matters.
 
 ## 4. Your first version, and the hidden bug
 
-This was your original `Solution1`:
+This is `Solution1` in `main.cpp`:
 
 ```cpp
 int currCharCheckIndex = 0;
@@ -181,8 +188,10 @@ isSubsequence("a", std::string("a\0\0", 3)); // correct answer: true
 | `'\0'` | 2            | `sequence[2]`                 | **two** past the end: undefined behaviour |
 
 Undefined behaviour means the program may do anything: return garbage,
-crash, or appear to work. Here it most likely returns `false` (`2 != 1`),
-which is wrong.
+crash, or appear to work. Here it almost certainly returns `false`
+(the index is already 2, and `2 != 1`), which is wrong.
+
+That's the last test in `main.cpp`. You'll watch it fail in section 8.
 
 > **Lesson (same as in strStr): check that an index is valid _before_ you
 > use it, not after.**
@@ -191,7 +200,7 @@ which is wrong.
 
 ## 5. The fix
 
-You already wrote this. It's the `Solution2` in your `.cpp`:
+This is `Solution2` in `main.cpp`:
 
 ```cpp
 class Solution2 {
@@ -322,38 +331,95 @@ missing character isn't hiding somewhere.
 
 ---
 
-## 8. Finish the harness
+## 8. Test Solution1 and Solution2
 
-Your harness already has `preview()` and the new test cases. Two things are left.
+All commands below are run from inside this folder **here** and then make sure there's a `build` folder.
 
-**a) Print a summary and return a failure code.** Right now `main` always
-returns 0, so a FAIL line can scroll by unnoticed. Replace `return 0;` with:
+```bash
+mkdir -p build
+```
+
+### How one line picks the solution
+
+`main.cpp` chooses what to test with:
 
 ```cpp
-  std::cout << "\n" << (testsRun - testsFailed) << "/" << testsRun << " passed";
-  if (testsFailed > 0) {
-    std::cout << "  (" << testsFailed << " FAILED)";
-  }
-  std::cout << '\n';
-
-  return testsFailed == 0 ? 0 : 1;
+typedef Solution1 Solution;
 ```
 
-**b) See the original bug with your own eyes.** Your `check()` currently
-compares `Solution1` (the original) against `Solution2` (the fix).
-Compile with sanitizers:
+Solution1 and Solution2 are asked `isSubsequence(s, t)`. Solution3
+(section 9) works differently: it's built from `t` first, then asked
+`isSubsequence(s)`. The small `answer<>` function in the harness handles
+both shapes, so changing this **one line** is enough to switch between all
+three. You don't need to understand `answer<>` in detail to use it.
+
+The suite has **33 tests**.
+
+### Step 1: Solution1, see the bug
+
+Leave the `typedef` as `Solution1`. Compile:
 
 ```bash
-g++ -std=c++17 -Wall -Wextra -g -fsanitize=address,undefined _ignore/3-is-subsequence.cpp -o is_subsequence
+g++ -std=c++17 -Wall -Wextra -g -fsanitize=address,undefined main.cpp -o build/app
+```
+
+Run:
+
+```bash
+./build/app
+```
+
+Expected:
+
+```text
+32/33 passed  (1 FAILED)
+```
+
+The one failure should be the **last** test, the embedded-`'\0'` one from
+section 4. That failure is the point of this step: it's the bug, on purpose.
+
+Any **other** failure here means that test's expected value is wrong,
+because Solution1 is correct for every input the problem allows.
+
+Expected warnings:
+
+- `comparison of integer expressions of different signedness` in Solution1 (Q3).
+- `unused variable` warnings in `Solution3` (`c`, `prev`, `list`). They go
+  away when you fill in its TODOs in section 9.
+
+The sanitizers probably **won't** report the bad read: `"a"` is so short
+that it's stored inside the string object itself, so reading `sequence[2]`
+stays inside memory the program owns. If you want to see the bad read get
+caught, build with the standard library's own bounds checks:
+
+```bash
+g++ -std=c++17 -Wall -Wextra -g -D_GLIBCXX_ASSERTIONS main.cpp -o build/app-checked
 ```
 
 ```bash
-./is_subsequence
+./build/app-checked
 ```
 
-Look at the last test, the embedded-`'\0'` one. `Solution2` should PASS.
-`Solution1` should either produce a MISMATCH line or a sanitizer report,
-or quietly read memory it shouldn't. Whatever you see, write it down.
+The program should stop on the last test with an assertion message
+mentioning `__pos <= size()`. That's `operator[]` catching the read two
+past the end. (This flag is for g++'s standard library.)
+
+### Step 2: Solution2, the fix
+
+Change one line:
+
+```cpp
+typedef Solution2 Solution;
+```
+
+Compile and run with the same two commands as step 1. Expected:
+
+```text
+33/33 passed
+```
+
+The embedded-`'\0'` test now passes, because Solution2 never reads
+`sequence[matchedIndex]` once `matchedIndex == sequence.size()`.
 
 ---
 
@@ -428,12 +494,14 @@ upper_bound(...,  3) -> list.end()   (nothing bigger than 3)
 |       | `b`  | `[1, 4]` | 4            | 4            |
 |       | `a`  | `[0, 3]` | none         | → **false**  |
 
+Both traces are tests in `main.cpp`, together with `"bb"` (true) and
+`"bbb"` (false) against the same `t`.
+
 ### Your turn: fill in the TODOs
 
-```cpp
-#include <algorithm>
-#include <vector>
+This is `Solution3` in `main.cpp`:
 
+```cpp
 class Solution3 {
 public:
   // build the table once for t
@@ -504,6 +572,7 @@ Try `s = "aa"`, `t = "a"`. The list for `a` is `[0]`.
   - `lower_bound`: first position **>= 0** is 0 again, so **true**. ✗
 
 `lower_bound` would use the same character of `t` twice, which isn't allowed.
+The test `check("aa", "a", false)` catches this.
 
 </details>
 
@@ -526,6 +595,10 @@ type. `size_t prev = -1` would silently become a gigantic number, and
 When there's only **one** query. Building the table already reads all of `t`,
 which is everything `Solution2` does, and then the query runs on top of that.
 The table only pays off when it's reused for many queries.
+
+(The test harness builds a fresh `Solution3` for every test, because every
+test uses a different `t`. That's fine for checking correctness, but it's
+not how you'd use it for speed.)
 
 </details>
 
@@ -578,31 +651,45 @@ Same trade as KMP: spend memory once, save time on every lookup.
 
 ---
 
-## 10. Let Solution2 referee Solution3
+## 10. Test Solution3
 
-`Solution2` is simple and you've tested it, so it becomes the referee.
-Don't use the original `Solution1`: it has the bug from section 4.
+### Step 3: Solution3
 
-**Step 1.** Delete these two lines. `Solution3` needs `t` in its constructor,
-so a global `Solution solution;` won't compile, and `check()` doesn't use it anyway.
+Fill in the two TODOs, then change one line:
 
 ```cpp
-typedef Solution2 Solution;
-Solution solution;
+typedef Solution3 Solution;
 ```
 
-**Step 2.** Replace `check()`:
+Compile and run with the same two commands as step 1. Expected:
+
+```text
+33/33 passed
+```
+
+If something goes wrong, the symptom points at the bug:
+
+| what you see                                              | what's probably wrong                                                  |
+| --------------------------------------------------------- | ---------------------------------------------------------------------- |
+| every test that expects `false` fails                     | the TODOs are still empty, so it always returns `true`                 |
+| `("aa", "a")` fails                                       | `lower_bound` instead of `upper_bound`                                 |
+| `("cba", "abcabc")` fails                                 | `prev` isn't updated after a match                                     |
+| every test that expects `true` with a non-empty `s` fails | `prev` is `size_t`, or the table was never filled                      |
+| crash or sanitizer report                                 | `*it` read when `it == list.end()`, or a plain `char` used as an index |
+
+### Step 4 (optional): referee mode
+
+Once Solution3 passes on its own, make every test also run Solution2 and
+print a warning if the two ever disagree. Replace `check()` with:
 
 ```cpp
 void check(const std::string &s, const std::string &t, bool expected) {
   ++testsRun;
 
-  Solution2 referee;
-  Solution3 fast(t);
-  const bool refResult = referee.isSubsequence(s, t);
-  const bool fastResult = fast.isSubsequence(s);
+  const bool actual = answer<Solution>(s, t);
+  const bool refResult = answer<Solution2>(s, t);
 
-  const bool ok = (fastResult == expected);
+  const bool ok = (actual == expected);
   if (!ok) {
     ++testsFailed;
   }
@@ -610,25 +697,21 @@ void check(const std::string &s, const std::string &t, bool expected) {
   std::cout << (ok ? "  PASS  " : "  FAIL  ") << "isSubsequence(\""
             << preview(s) << "\", \"" << preview(t) << "\")"
             << "  expected=" << std::boolalpha << expected
-            << "  actual=" << fastResult << '\n';
+            << "  actual=" << actual << '\n';
 
-  if (refResult != fastResult) {
+  if (refResult != actual) {
     std::cout << "          MISMATCH: Solution2 said " << std::boolalpha
               << refResult << '\n';
   }
 }
 ```
 
-**Step 3.** Add the two cases from this section:
+The referee is **Solution2**, not Solution1: Solution1 has the bug from
+section 4. Keep the `expected` values too: two solutions agreeing doesn't
+prove both are right.
 
-```cpp
-  // follow-up traces and the upper_bound trap
-  check("cab", "abcabc", true);
-  check("cba", "abcabc", false);
-  check("aa", "a", false); // fails if you used lower_bound
-```
-
-**Step 4.** Compile and run (same commands as section 8).
+The `typedef` still works in referee mode. Try `typedef Solution1 Solution;`
+again: the embedded-`'\0'` test now prints both a FAIL and a MISMATCH line.
 
 ---
 
@@ -637,9 +720,10 @@ void check(const std::string &s, const std::string &t, bool expected) {
 - [ ] I can explain the two-finger idea without looking.
 - [ ] I traced `"aec"` / `"abcde"` and got false.
 - [ ] I can explain why the original read `sequence[2]` on `"ab"` / `"abx"`, and why that didn't crash.
-- [ ] I ran the embedded-`'\0'` case against the original and wrote down what happened.
-- [ ] `main` prints a summary and returns 1 on failure.
+- [ ] Step 1 printed `32/33 passed  (1 FAILED)`, and the failure was the embedded-`'\0'` test.
+- [ ] Step 2 printed `33/33 passed` with `typedef Solution2 Solution;`.
 - [ ] I filled in the `Solution3` TODOs without opening the solution.
-- [ ] All tests pass and there are no MISMATCH lines.
+- [ ] Step 3 printed `33/33 passed` with `typedef Solution3 Solution;`.
+- [ ] (Optional) referee mode shows no MISMATCH lines for Solution3.
 
-Show me your output, or the first step where you got stuck.
+Paste your output, or tell me the first step where you got stuck.
