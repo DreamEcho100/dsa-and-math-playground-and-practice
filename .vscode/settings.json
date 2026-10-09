@@ -1,1 +1,10 @@
-{}
+{
+  "C_Cpp.default.compilerPath": "/usr/bin/g++",
+  "C_Cpp.default.cStandard": "c17",
+  "C_Cpp.default.cppStandard": "c++17",
+  "C_Cpp.default.compilerArgs": ["-Wall", "-Wextra", "-D_GLIBCXX_ASSERTIONS"],
+  "C_Cpp.default.includePath": [
+    "${workspaceFolder}/platforms-and-courses/index-0/**"
+  ],
+  "debug.onTaskErrors": "showErrors"
+}

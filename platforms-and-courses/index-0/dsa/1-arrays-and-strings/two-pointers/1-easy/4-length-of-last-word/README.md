@@ -404,19 +404,7 @@ Testing happens in three steps. Do them in order.
 
 `main.cpp` starts with:
 
-```cpp
-typedef Solution1 Solution;
-```
-
-Compile and run:
-
-```bash
-g++ -std=c++17 -Wall -Wextra -g -fsanitize=address,undefined main.cpp -o build/app
-```
-
-```bash
-./build/app
-```
+See the main `platforms-and-courses/index-0/1-arrays-and-strings/two-pointers/1-easy/1-backspace-string-compare/README.md` for running and debugging instructions
 
 Expected: **`22/22 passed`**, plus two warnings:
 

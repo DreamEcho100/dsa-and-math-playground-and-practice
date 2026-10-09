@@ -1,0 +1,60 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "index-0: build current problem",
+      "type": "shell",
+      "command": "${workspaceFolder}/platforms-and-courses/index-0/build.sh",
+      "args": ["${file}"],
+      "group": { "kind": "build", "isDefault": true },
+      "presentation": { "reveal": "always", "clear": true },
+      "problemMatcher": { "base": "$gcc", "fileLocation": "absolute" }
+    },
+    {
+      "label": "index-0: build picked problem",
+      "type": "shell",
+      "command": "./build.sh",
+      "args": ["--pick"],
+      "options": { "cwd": "${workspaceFolder}/platforms-and-courses/index-0" },
+      "presentation": { "reveal": "always", "focus": true, "clear": true },
+      "problemMatcher": { "base": "$gcc", "fileLocation": "absolute" }
+    },
+    {
+      "label": "index-0: rebuild last built problem",
+      "type": "shell",
+      "command": "./build.sh",
+      "args": ["--last"],
+      "options": { "cwd": "${workspaceFolder}/platforms-and-courses/index-0" },
+      "presentation": { "reveal": "always", "focus": true, "clear": true },
+      "problemMatcher": { "base": "$gcc", "fileLocation": "absolute" }
+    },
+    {
+      "label": "index-0: run current problem",
+      "type": "shell",
+      "command": "./build.sh",
+      "args": ["--run", "${file}"],
+      "options": { "cwd": "${workspaceFolder}/platforms-and-courses/index-0" },
+      "group": { "kind": "test", "isDefault": true },
+      "presentation": { "reveal": "always", "focus": true, "clear": true },
+      "problemMatcher": { "base": "$gcc", "fileLocation": "absolute" }
+    },
+    {
+      "label": "index-0: run picked problem",
+      "type": "shell",
+      "command": "./build.sh",
+      "args": ["--pick", "--run"],
+      "options": { "cwd": "${workspaceFolder}/platforms-and-courses/index-0" },
+      "presentation": { "reveal": "always", "focus": true, "clear": true },
+      "problemMatcher": { "base": "$gcc", "fileLocation": "absolute" }
+    },
+    {
+      "label": "index-0: run last built problem",
+      "type": "shell",
+      "command": "./build.sh",
+      "args": ["--last", "--run"],
+      "options": { "cwd": "${workspaceFolder}/platforms-and-courses/index-0" },
+      "presentation": { "reveal": "always", "focus": true, "clear": true },
+      "problemMatcher": { "base": "$gcc", "fileLocation": "absolute" }
+    }
+  ]
+}

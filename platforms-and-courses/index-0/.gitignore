@@ -1,1 +1,6 @@
 build
+.cache
+
+**/build/
+**/.cache/
+.last-build

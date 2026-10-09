@@ -1,0 +1,12 @@
+CompileFlags:
+  Add: [-Wall, -Wextra]
+---
+If:
+  PathMatch: .*\.(cc|cpp|cxx|hh|hpp|hxx)
+CompileFlags:
+  Add: [-std=c++17, -D_GLIBCXX_ASSERTIONS]
+---
+If:
+  PathMatch: .*\.c
+CompileFlags:
+  Add: [-std=c17]

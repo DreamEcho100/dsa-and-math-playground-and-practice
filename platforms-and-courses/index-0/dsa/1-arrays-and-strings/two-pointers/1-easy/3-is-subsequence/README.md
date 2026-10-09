@@ -359,15 +359,7 @@ The suite has **33 tests**.
 
 Leave the `typedef` as `Solution1`. Compile:
 
-```bash
-g++ -std=c++17 -Wall -Wextra -g -fsanitize=address,undefined main.cpp -o build/app
-```
-
-Run:
-
-```bash
-./build/app
-```
+See the main `platforms-and-courses/index-0/1-arrays-and-strings/two-pointers/1-easy/1-backspace-string-compare/README.md` for running and debugging instructions
 
 Expected:
 
@@ -392,13 +384,7 @@ that it's stored inside the string object itself, so reading `sequence[2]`
 stays inside memory the program owns. If you want to see the bad read get
 caught, build with the standard library's own bounds checks:
 
-```bash
-g++ -std=c++17 -Wall -Wextra -g -D_GLIBCXX_ASSERTIONS main.cpp -o build/app-checked
-```
-
-```bash
-./build/app-checked
-```
+See the main `platforms-and-courses/index-0/1-arrays-and-strings/two-pointers/1-easy/1-backspace-string-compare/README.md` for running and debugging instructions
 
 The program should stop on the last test with an assertion message
 mentioning `__pos <= size()`. That's `operator[]` catching the read two

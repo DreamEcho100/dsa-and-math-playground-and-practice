@@ -1,0 +1,77 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "index-0: debug current problem",
+      "type": "cppdbg",
+      "request": "launch",
+      "preLaunchTask": "index-0: build current problem",
+      "program": "${workspaceFolder}/platforms-and-courses/index-0/.last-build/build/app",
+      "cwd": "${workspaceFolder}/platforms-and-courses/index-0/.last-build",
+      "MIMode": "gdb",
+      "externalConsole": false,
+      "environment": [
+        { "name": "ASAN_OPTIONS", "value": "detect_leaks=0:abort_on_error=1" },
+        {
+          "name": "UBSAN_OPTIONS",
+          "value": "print_stacktrace=1:abort_on_error=1"
+        }
+      ],
+      "setupCommands": [
+        {
+          "description": "Pretty-print STL containers",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ]
+    },
+    {
+      "name": "index-0: pick a problem…",
+      "type": "cppdbg",
+      "request": "launch",
+      "preLaunchTask": "index-0: build picked problem",
+      "program": "${workspaceFolder}/platforms-and-courses/index-0/.last-build/build/app",
+      "cwd": "${workspaceFolder}/platforms-and-courses/index-0/.last-build",
+      "MIMode": "gdb",
+      "externalConsole": false,
+      "environment": [
+        { "name": "ASAN_OPTIONS", "value": "detect_leaks=0:abort_on_error=1" },
+        {
+          "name": "UBSAN_OPTIONS",
+          "value": "print_stacktrace=1:abort_on_error=1"
+        }
+      ],
+      "setupCommands": [
+        {
+          "description": "Pretty-print STL containers",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ]
+    },
+    {
+      "name": "index-0: debug last built (no prompt)",
+      "type": "cppdbg",
+      "request": "launch",
+      "preLaunchTask": "index-0: rebuild last built problem",
+      "program": "${workspaceFolder}/platforms-and-courses/index-0/.last-build/build/app",
+      "cwd": "${workspaceFolder}/platforms-and-courses/index-0/.last-build",
+      "MIMode": "gdb",
+      "externalConsole": false,
+      "environment": [
+        { "name": "ASAN_OPTIONS", "value": "detect_leaks=0:abort_on_error=1" },
+        {
+          "name": "UBSAN_OPTIONS",
+          "value": "print_stacktrace=1:abort_on_error=1"
+        }
+      ],
+      "setupCommands": [
+        {
+          "description": "Pretty-print STL containers",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ]
+    }
+  ]
+}

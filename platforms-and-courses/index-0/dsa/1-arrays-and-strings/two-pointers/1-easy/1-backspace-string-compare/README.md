@@ -266,33 +266,7 @@ worst-case time complexity.
 
 ## 8. Test both solutions with the same suite
 
-All commands below are run from inside this folder **here** and then make sure there's a `build` folder.
-
-```bash
-mkdir -p build
-```
-
-Testing happens in three steps. Do them in order.
-
-### Step 1: test Solution1 (checks the tests)
-
-`main.cpp` starts with:
-
-```cpp
-typedef Solution1 Solution;
-```
-
-Compile:
-
-```bash
-g++ -std=c++17 -Wall -Wextra -g -fsanitize=address,undefined main.cpp -o build/app
-```
-
-Run:
-
-```bash
-./build/app
-```
+See the main `platforms-and-courses/index-0/1-arrays-and-strings/two-pointers/1-easy/1-backspace-string-compare/README.md` for running and debugging instructions
 
 The suite has **35 tests**. The last line should be:
 

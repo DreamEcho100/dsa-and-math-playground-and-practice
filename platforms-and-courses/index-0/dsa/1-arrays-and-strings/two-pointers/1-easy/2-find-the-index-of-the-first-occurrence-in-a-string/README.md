@@ -479,22 +479,7 @@ needed:
 
 Remember to add `#include <vector>` at the top of the file.
 
-Compile with warnings on, then run:
-
-```bash
-g++ -std=c++17 -Wall -Wextra -O2 _ignore/2-find-the-index-of-the-first-occurrence-in-a-string.cpp -o strstr_test
-```
-
-```bash
-./strstr_test
-```
-
-To _feel_ the speed difference, change `check()` to call only one solution,
-then time each one separately:
-
-```bash
-time ./strstr_test
-```
+See the main `platforms-and-courses/index-0/1-arrays-and-strings/two-pointers/1-easy/1-backspace-string-compare/README.md` for running and debugging instructions
 
 ---
 
